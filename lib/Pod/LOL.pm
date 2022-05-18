@@ -25,9 +25,9 @@ has [qw/ _pos root /];
 
 Transform POD into a list of lists (lol)
 
-    use Pod::List;
+   use Pod::LOL;
 	my $lol = Pod::LOL->new->parse_file($path)->root;
-    
+
 $lol contains:
 
     [
