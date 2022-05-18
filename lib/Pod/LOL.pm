@@ -12,11 +12,11 @@ Pod::LOL - Transform POD into a list of lists
 
 =head1 VERSION
 
-Version 0.01
+Version 0.02
 
 =cut
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 our $DEBUG   = 0;
 
 has [qw/ _pos root /];
