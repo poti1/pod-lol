@@ -91,3 +91,6 @@
 
 # Avoid archives of this distribution
 \bPod-LOL-[\d\.\_]+
+
+# Avoid TODO
+^TODO$
