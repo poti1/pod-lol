@@ -1169,7 +1169,7 @@ for my $case ( @cases ) {
 
    # Parse and compare
    is_deeply(
-      Pod::LOL->new->parse_file( $file )->root,
+      Pod::LOL->new_root( $file ),
       $case->{expected_root},
       $case->{name},
    );

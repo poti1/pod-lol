@@ -1,10 +1,10 @@
 package Pod::LOL;
 
-use v5.24;    # Postfix defef :)
+use 5.012;    # Pod::Simple, parent.
 use strict;
 use warnings;
-use Mojo::Base qw/ -base Pod::Simple /;
-use Mojo::Util qw/ dumper /;
+use parent qw( Pod::Simple );
+use Data::Dumper;
 
 =head1 NAME
 
@@ -12,14 +12,13 @@ Pod::LOL - parse Pod into a list of lists (LOL)
 
 =head1 VERSION
 
-Version 0.03
+Version 0.04
 
 =cut
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 our $DEBUG   = 0;
 
-has [qw/ _pos root /];
 
 =head1 SYNOPSIS
 
@@ -30,7 +29,7 @@ has [qw/ _pos root /];
    Pod::LOL - parse Pod into a list of lists (LOL)
 
 
-   % perl -MPod::LOL -MMojo::Util=dumper -E 'say dumper( Pod::LOL->new->parse_file("my.pod")->root )'
+   % perl -MPod::LOL -MData::Dumper -e 'print Dumper( Pod::LOL->new_root("my.pod") )'
 
 Returns:
 
@@ -56,11 +55,25 @@ This is a subclass of L<Pod::Simple> and inherits all of its methods.
 
 =head1 SUBROUTINES/METHODS
 
-This module overwrites the following methods
-from Pod::Simple:
+=head2 new_root
+
+Convenience method to do this:
+
+   Pod::LOL->new->parse_file( $file )->{root};
+
+=cut
+
+sub new_root {
+   my ( $class, $file ) = @_;
+
+   my $s = $class->new->parse_file( $file );
+
+   $s->{root};
+}
 
 =head2 _handle_element_start
 
+Overrides Pod::Simple.
 Executed when a new pod element starts such as:
 
    "head1"
@@ -69,26 +82,27 @@ Executed when a new pod element starts such as:
 =cut
 
 sub _handle_element_start {
-   my ( $s, $tag, $attr ) = @_;
-   $DEBUG and say "TAG_START: $tag";
+   my ( $s, $tag ) = @_;
+   $DEBUG and print STDERR "TAG_START: $tag";
 
-   if ( $s->_pos ) {
+   if ( $s->{_pos} ) {    # We already have a position.
       my $x =
-        ( length( $tag ) == 1 ) ? [] : [$tag];    # Ignore single character tags
-      push $s->_pos->[0]->@*, $x;                 # Append to root
-      unshift $s->_pos->@*, $x;                   # Set as current position
+        ( length( $tag ) == 1 ) ? [] : [$tag];   # Ignore single character tags.
+      push @{ $s->{_pos}[0] }, $x;               # Append to root.
+      unshift @{ $s->{_pos} }, $x;               # Set as current position.
    }
    else {
       my $x = [];
-      $s->root( $x );                             # Set root
-      $s->_pos( [$x] );                           # Set current position
+      $s->{root} = $x;                           # Set root.
+      $s->{_pos} = [$x];                         # Set current position.
    }
 
-   $DEBUG and say "_pos: ", dumper $s->_pos;
+   $DEBUG and print STDERR "{_pos}: " . Dumper $s->{_pos};
 }
 
 =head2 _handle_text
 
+Overrides Pod::Simple.
 Executed for each text element such as:
 
    "NAME"
@@ -98,17 +112,18 @@ Executed for each text element such as:
 
 sub _handle_text {
    my ( $s, $text ) = @_;
-   $DEBUG and say "TEXT: $text";
+   $DEBUG and print STDERR "TEXT: $text";
 
-   push $s->_pos->[0]->@*, $text;    # Add text
+   push @{ $s->{_pos}[0] }, $text;    # Add the new text.
 
-   $DEBUG and say "_pos: ", dumper $s->_pos;
+   $DEBUG and print STDERR "{_pos}: " . Dumper $s->{_pos};
 }
 
 =head2 _handle_element_end
 
+Overrides Pod::Simple.
 Executed when a pod element ends.
-So when these end:
+Such as when these tags end:
 
    "head1"
    "Para"
@@ -117,25 +132,27 @@ So when these end:
 
 sub _handle_element_end {
    my ( $s, $tag ) = @_;
-   $DEBUG and say "TAG_END: $tag";
-   shift $s->_pos->@*;
+   $DEBUG and print STDERR "TAG_END: $tag";
+   shift @{ $s->{_pos} };
 
    if ( length $tag == 1 ) {
 
       # Single character tags (like L<>) should be on the same level as text.
-      $s->_pos->[0][-1] = join "", $s->_pos->[0][-1]->@*;
-      $DEBUG and say "TAG_END_TEXT: @{[ $s->_pos->[0][-1] ]}";
+      $s->{_pos}[0][-1] = join "", @{ $s->{_pos}[0][-1] };
+      $DEBUG and print STDERR "TAG_END_TEXT: @{[ $s->{_pos}[0][-1] ]}";
    }
    elsif ( $tag eq "Para" ) {
 
       # Should only have 2 elements: tag, entire text
-      my ( $_tag, @text ) = $s->_pos->[0][-1]->@*;
+      my ( $_tag, @text ) = @{ $s->{_pos}[0][-1] };
       my $text = join "", @text;
-      $s->_pos->[0][-1]->@* = ( $_tag, $text );
+      @{ $s->{_pos}[0][-1] } = ( $_tag, $text );
    }
 
-   $DEBUG and say "_pos: ", dumper $s->_pos;
+   $DEBUG and print STDERR "{_pos}: " . Dumper $s->{_pos};
 }
+
+=head __
 
 
 =head1 SEE ALSO
