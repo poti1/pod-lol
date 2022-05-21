@@ -1,11 +1,9 @@
 #!perl
-use v5.30;
+use v5.26;    # Indented heredoc.
 use strict;
 use warnings;
 use Test::More;
 use File::Temp qw( tempfile );
-use feature qw( say );
-use Mojo::Util qw( dumper );
 
 BEGIN {
    use_ok( 'Pod::LOL' ) || print "Bail out!\n";
@@ -18,6 +16,40 @@ my @cases = (
       name          => "Empty",
       expected_root => [],
       pod           => <<~POD,
+      POD
+   },
+   {
+      name          => "Head1-Para",
+      expected_root => [
+         [ "head1", "NAME" ],
+         [
+            "Para",
+            "Example - Just an example"
+         ],
+
+      ],
+      pod => <<~POD,
+      =head1 NAME
+      
+      Example - Just an example
+      
+      =cut
+      POD
+   },
+   {
+      name          => "Head1-Para (no cut)",
+      expected_root => [
+         [ "head1", "NAME" ],
+         [
+            "Para",
+            "Example - Just an example"
+         ],
+
+      ],
+      pod => <<~POD,
+      =head1 NAME
+      
+      Example - Just an example
       POD
    },
    {
@@ -68,15 +100,20 @@ my @cases = (
 my ( $fh, $file ) = tempfile( SUFFIX => ".pm" );
 
 for my $case ( @cases ) {
+
+   # Empty the tempfile.
    truncate $fh, 0;
-
    $fh->seek( 0, 0 );
+
+   # Add some pod.
    print $fh $case->{pod};
+
+   # Make at the beginning of the file.
    $fh->seek( 0, 0 );
 
-   my $parser = Pod::LOL->new;
+   # Parse and compare
    is_deeply(
-      $parser->parse_file( $file )->root,
+      Pod::LOL->new->parse_file( $file )->root,
       $case->{expected_root},
       $case->{name},
    );

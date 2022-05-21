@@ -1,72 +1,75 @@
 package Pod::LOL;
 
-use 5.030;
+use v5.24;    # Postfix defef :)
 use strict;
 use warnings;
-use Mojo::Base qw/ -base Pod::Simple -signatures /;
+use Mojo::Base qw/ -base Pod::Simple /;
 use Mojo::Util qw/ dumper /;
 
 =head1 NAME
 
-Pod::LOL - Transform POD into a list of lists
+Pod::LOL - parse Pod into a list of lists (LOL)
 
 =head1 VERSION
 
-Version 0.02
+Version 0.03
 
 =cut
 
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 our $DEBUG   = 0;
 
 has [qw/ _pos root /];
 
 =head1 SYNOPSIS
 
-Transform POD into a list of lists (lol)
+   % cat my.pod
 
-   use Pod::LOL;
-	my $lol = Pod::LOL->new->parse_file($path)->root;
+   =head1 NAME
 
-$lol contains:
+   Pod::LOL - parse Pod into a list of lists (LOL)
 
-    [
-	  [
-	    "head1",
-	    "NAME"
-	  ],
-	  [
-	    "Para",
-	    "Pod::LOL - Transform POD into a list of lists"
-	  ],
-	  [
-	    "head1",
-	    "VERSION"
-	  ],
-	  ...
-	],
 
-Inline (Debugging)
+   % perl -MPod::LOL -MMojo::Util=dumper -E 'say dumper( Pod::LOL->new->parse_file("my.pod")->root )'
 
-    perl -Ilib -MPod::LOL -MMojo::Util=dumper -E "say dumper(Pod::LOL->new->parse_file('lib/Pod/LOL.pm')->root)"
+Returns:
+
+   [
+      [
+         "head1",
+         "NAME"
+      ],
+      [
+         "Para",
+         "Pod::LOL - parse Pod into a list of lists (LOL)"
+      ],
+   ]
+
 
 =head1 DESCRIPTION
 
-This module takes a path a extracts the pod information
-into a list of lists.
+This class may be of interest for anyone writing a Pod parser.
 
-=head1 METHODS
+This module takes Pod (as a file) and returns a list of lists (LOL) structure.
+
+This is a subclass of L<Pod::Simple> and inherits all of its methods.
+
+=head1 SUBROUTINES/METHODS
 
 This module overwrites the following methods
 from Pod::Simple:
 
 =head2 _handle_element_start
 
-Executed when a new pod element starts.
+Executed when a new pod element starts such as:
+
+   "head1"
+   "Para"
 
 =cut
 
-sub _handle_element_start ( $s, $tag, $attr ) {
+sub _handle_element_start {
+   my ( $s, $tag, $attr ) = @_;
    $DEBUG and say "TAG_START: $tag";
 
    if ( $s->_pos ) {
@@ -86,11 +89,15 @@ sub _handle_element_start ( $s, $tag, $attr ) {
 
 =head2 _handle_text
 
-Executed for each text element.
+Executed for each text element such as:
+
+   "NAME"
+   "Pod::LOL - parse Pod into a list of lists (LOL)"
 
 =cut
 
-sub _handle_text ( $s, $text ) {
+sub _handle_text {
+   my ( $s, $text ) = @_;
    $DEBUG and say "TEXT: $text";
 
    push $s->_pos->[0]->@*, $text;    # Add text
@@ -101,6 +108,10 @@ sub _handle_text ( $s, $text ) {
 =head2 _handle_element_end
 
 Executed when a pod element ends.
+So when these end:
+
+   "head1"
+   "Para"
 
 =cut
 
@@ -126,9 +137,15 @@ sub _handle_element_end {
    $DEBUG and say "_pos: ", dumper $s->_pos;
 }
 
+
 =head1 SEE ALSO
 
-L<Module::Functions>
+L<App::Pod>
+
+L<Pod::Query>
+
+L<Pod::Simple>
+
 
 =head1 AUTHOR
 
@@ -136,9 +153,8 @@ Tim Potapov, C<< <tim.potapov[AT]gmail.com> >>
 
 =head1 BUGS
 
-Please report any bugs or feature requests to C<bug-pod-lol at rt.cpan.org>, or through
-the web interface at L<https://rt.cpan.org/NoAuth/ReportBug.html?Queue=Pod-LOL>.  I will be notified, and then you'll
-automatically be notified of progress on your bug as I make changes.
+Please report any bugs or feature requests to L<https://github.com/poti1/pod-lol/issues>.
+
 
 =head1 SUPPORT
 
@@ -146,27 +162,16 @@ You can find documentation for this module with the perldoc command.
 
     perldoc Pod::LOL
 
+
 You can also look for information at:
 
-=over 4
-
-=item * RT: CPAN's request tracker (report bugs here)
-
-L<https://rt.cpan.org/NoAuth/Bugs.html?Dist=Pod-LOL>
-
-=item * CPAN Ratings
-
-L<https://cpanratings.perl.org/d/Pod-LOL>
-
-=item * Search CPAN
-
-L<https://metacpan.org/release/Pod-LOL>
-
-=back
+L<https://metacpan.org/pod/Pod::LOL>
+L<https://github.com/poti1/pod-lol>
 
 
 =head1 ACKNOWLEDGEMENTS
 
+TBD
 
 =head1 LICENSE AND COPYRIGHT
 
