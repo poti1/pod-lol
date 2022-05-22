@@ -12,11 +12,11 @@ Pod::LOL - parse Pod into a list of lists (LOL)
 
 =head1 VERSION
 
-Version 0.04
+Version 0.05
 
 =cut
 
-our $VERSION = '0.04';
+our $VERSION = '0.05';
 our $DEBUG   = 0;
 
 
@@ -66,7 +66,16 @@ Convenience method to do this:
 sub new_root {
    my ( $class, $file ) = @_;
 
-   my $s = $class->new->parse_file( $file );
+   my $parser = $class->new;
+
+   # Normally =for and =begin would otherwise be skipped.
+   $parser->accept_targets( '*' );
+
+   my $s = $parser->parse_file( $file );
+
+
+   # TODO: Add error check here.
+
 
    $s->{root};
 }
