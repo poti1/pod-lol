@@ -1,2 +1,4 @@
 Do not create parameters if profiling shows
 functions are too slow.
+
+Make Test Role like with Pod::Query.
