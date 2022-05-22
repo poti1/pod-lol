@@ -12,11 +12,11 @@ Pod::LOL - parse Pod into a list of lists (LOL)
 
 =head1 VERSION
 
-Version 0.05
+Version 0.06
 
 =cut
 
-our $VERSION = '0.05';
+our $VERSION = '0.06';
 our $DEBUG   = 0;
 
 
@@ -160,8 +160,6 @@ sub _handle_element_end {
 
    $DEBUG and print STDERR "{_pos}: " . Dumper $s->{_pos};
 }
-
-=head __
 
 
 =head1 SEE ALSO
