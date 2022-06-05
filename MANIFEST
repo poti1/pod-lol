@@ -1,10 +1,7 @@
 Build.PL
 Changes
-ignore.txt
 lib/Pod/LOL.pm
 MANIFEST			This list of files
-META.json
-META.yml
 README
 t/00-load.t
 t/01-usage-simple.t
