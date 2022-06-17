@@ -65,7 +65,9 @@ Convenience method to do (mostly) this:
 
 sub new_root {
     my ( $class, $file ) = @_;
-    print STDERR "new_root: class=$class, file=$file, ref(file)=@{[ref $file]}\n" if $DEBUG;
+    if ( $DEBUG ) {
+        printf STDERR "class=$class, file=$file, ref=%s\n", ref $file;
+    }
 
     my $parser = $class->new;
 
