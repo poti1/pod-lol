@@ -65,7 +65,7 @@ Convenience method to do (mostly) this:
 
 sub new_root {
     my ( $class, $file ) = @_;
-    print STDERR "new_root: class=$class, file=$file" if $DEBUG;
+    print STDERR "new_root: class=$class, file=$file, ref(file)=@{[ref $file]}\n" if $DEBUG;
 
     my $parser = $class->new;
 
@@ -73,10 +73,6 @@ sub new_root {
     $parser->accept_targets( '*' );
 
     my $s = $parser->parse_file( $file );
-
-
-    # TODO: Add error check here.
-
 
     $s->{root};
 }
