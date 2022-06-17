@@ -12,11 +12,11 @@ Pod::LOL - parse Pod into a list of lists (LOL)
 
 =head1 VERSION
 
-Version 0.07
+Version 0.08
 
 =cut
 
-our $VERSION = '0.07';
+our $VERSION = '0.08';
 our $DEBUG   = 0;
 
 
@@ -65,6 +65,7 @@ Convenience method to do (mostly) this:
 
 sub new_root {
     my ( $class, $file ) = @_;
+    print STDERR "new_root: class=$class, file=$file" if $DEBUG;
 
     my $parser = $class->new;
 
@@ -92,7 +93,7 @@ Executed when a new pod element starts such as:
 
 sub _handle_element_start {
     my ( $s, $tag ) = @_;
-    $DEBUG and print STDERR "TAG_START: $tag";
+    print STDERR "TAG_START: $tag" if $DEBUG;
 
     if ( $s->{_pos} ) {    # We already have a position.
         my $x =
@@ -106,7 +107,7 @@ sub _handle_element_start {
         $s->{_pos} = [$x];                       # Set current position.
     }
 
-    $DEBUG and print STDERR "{_pos}: " . Dumper $s->{_pos};
+    print STDERR "{_pos}: " . Dumper $s->{_pos} if $DEBUG;
 }
 
 =head2 _handle_text
@@ -121,11 +122,11 @@ Executed for each text element such as:
 
 sub _handle_text {
     my ( $s, $text ) = @_;
-    $DEBUG and print STDERR "TEXT: $text";
+    print STDERR "TEXT: $text" if $DEBUG;
 
     push @{ $s->{_pos}[0] }, $text;    # Add the new text.
 
-    $DEBUG and print STDERR "{_pos}: " . Dumper $s->{_pos};
+    print STDERR "{_pos}: " . Dumper $s->{_pos} if $DEBUG;
 }
 
 =head2 _handle_element_end
@@ -141,14 +142,14 @@ Such as when these tags end:
 
 sub _handle_element_end {
     my ( $s, $tag ) = @_;
-    $DEBUG and print STDERR "TAG_END: $tag";
+    print STDERR "TAG_END: $tag" if $DEBUG;
     shift @{ $s->{_pos} };
 
     if ( length $tag == 1 ) {
 
         # Single character tags (like L<>) should be on the same level as text.
         $s->{_pos}[0][-1] = join "", @{ $s->{_pos}[0][-1] };
-        $DEBUG and print STDERR "TAG_END_TEXT: @{[ $s->{_pos}[0][-1] ]}";
+        print STDERR "TAG_END_TEXT: @{[ $s->{_pos}[0][-1] ]}" if $DEBUG;
     }
     elsif ( $tag eq "Para" ) {
 
@@ -158,7 +159,7 @@ sub _handle_element_end {
         @{ $s->{_pos}[0][-1] } = ( $_tag, $text );
     }
 
-    $DEBUG and print STDERR "{_pos}: " . Dumper $s->{_pos};
+    print STDERR "{_pos}: " . Dumper $s->{_pos} if $DEBUG;
 }
 
 
