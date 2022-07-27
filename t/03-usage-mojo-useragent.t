@@ -1,5 +1,5 @@
 #!perl
-use v5.26;    # Indented heredoc.
+use 5.006;
 use strict;
 use warnings;
 use Test::More;
