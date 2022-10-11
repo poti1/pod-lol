@@ -93,7 +93,7 @@
 \bPod-LOL-[\d\.\_]+
 
 # Avoid TODO
-^TODO$
+\bTODO$
 
 # Avoid git flow
 /.github/workflows/ci\.yml$
