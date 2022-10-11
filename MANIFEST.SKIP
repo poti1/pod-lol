@@ -94,3 +94,6 @@
 
 # Avoid TODO
 ^TODO$
+
+# Avoid git flow
+/.github/workflows/ci\.yml$
