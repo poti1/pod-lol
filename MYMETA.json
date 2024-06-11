@@ -4,7 +4,7 @@
       "Tim Potapov <tim.potapov[AT]gmail.com>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "Module::Build version 0.4231",
+   "generated_by" : "Module::Build version 0.4234",
    "license" : [
       "artistic_2"
    ],
@@ -33,7 +33,7 @@
    "provides" : {
       "Pod::LOL" : {
          "file" : "lib/Pod/LOL.pm",
-         "version" : "0.12"
+         "version" : "0.13"
       }
    },
    "release_status" : "stable",
@@ -48,6 +48,6 @@
          "url" : "https://github.com/poti1/pod-lol"
       }
    },
-   "version" : "0.12",
-   "x_serialization_backend" : "JSON::PP version 4.07"
+   "version" : "0.13",
+   "x_serialization_backend" : "JSON::PP version 4.16"
 }
