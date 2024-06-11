@@ -13,4 +13,3 @@ t/03-usage-mojo-useragent.t
 t/manifest.t
 t/pod-coverage.t
 t/pod.t
-xt/boilerplate.t
