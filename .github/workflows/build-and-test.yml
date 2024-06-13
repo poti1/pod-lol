@@ -84,7 +84,7 @@ jobs:
     name:  on ${{ matrix.os }} perl ${{ matrix.perl-version }}
     steps:
       - name: set up perl
-        uses: shogo82148/actions-setup-perl@v1.28.0
+        uses: shogo82148/actions-setup-perl@v1.30.0
         with:
           perl-version: ${{ matrix.perl-version }}
           distribution: ${{ matrix.distribution }}
